@@ -3,467 +3,198 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeroLinkXZ | Portal</title>
+  <title>Nerolinkxz UI</title>
   <style>
-    :root {
-      --bg: #0c0d10;
-      --panel: #16181d;
-      --border: #262931;
-      --text: #e6edf3;
-      --dim: #8b949e;
-      --accent: #58a6ff;
-      --green: #3fb950;
-      --red: #f85149;
-    }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: 'Consolas', 'Courier New', monospace;
+      background-color: #0d0f12;
+      color: #00ffcc;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      flex-direction: column;
       height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      padding: 15px;
     }
 
-    /* Top Navigation Bar */
-    .header-bar {
-      background-color: var(--panel);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 16px;
+    header {
       display: flex;
-      gap: 16px;
+      justify-content: space-between;
       align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #1f2937;
     }
 
-    .brand-title {
-      font-weight: bold;
-      color: var(--accent);
-      font-size: 1rem;
-      letter-spacing: 1px;
-    }
+    h1 { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
 
-    .nav-tabs {
-      display: flex;
-      gap: 8px;
-    }
+    .key-bar { display: flex; gap: 8px; }
 
-    .nav-btn {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--dim);
-      padding: 6px 12px;
-      font-family: inherit;
-      font-size: 0.85rem;
+    input, button {
+      background: #161b22;
+      border: 1px solid #30363d;
+      color: #e6edf3;
+      padding: 8px 12px;
       border-radius: 4px;
+      font-family: inherit;
+    }
+
+    input:focus { outline: 1px solid #00ffcc; }
+
+    button {
       cursor: pointer;
+      background: #21262d;
+      color: #00ffcc;
+      border-color: #30363d;
+      transition: 0.2s;
     }
 
-    .nav-btn.active, .nav-btn:hover {
-      color: var(--text);
-      border-color: var(--accent);
-    }
-
-    .config-group {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .config-group input {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 5px 8px;
-      font-family: inherit;
-      font-size: 0.8rem;
-      border-radius: 4px;
-      outline: none;
-    }
-
-    .btn-save {
-      background: var(--accent);
-      color: #000;
-      border: none;
-      padding: 5px 10px;
-      font-family: inherit;
-      font-weight: bold;
-      font-size: 0.8rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    /* Views Container */
-    .view-content {
-      flex: 1;
-      display: none;
-      padding: 16px;
-      overflow-y: auto;
-    }
-
-    .view-content.active {
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Terminal View */
-    #terminalView {
-      gap: 12px;
-    }
+    button:hover { background: #30363d; }
 
     #terminal {
       flex: 1;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      font-size: 0.95rem;
-    }
-
-    .line { word-break: break-word; }
-    .line.user { color: var(--accent); }
-    .line.bot { color: var(--text); }
-    .line.sys { color: var(--dim); font-style: italic; }
-    .line.error { color: var(--red); }
-
-    .input-bar {
-      border-top: 1px solid var(--border);
-      background-color: var(--panel);
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: auto;
-    }
-
-    #cmdInput {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 1rem;
-      outline: none;
-    }
-
-    /* Apps & Games Grid */
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 12px;
-    }
-
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      padding: 14px;
-      border-radius: 6px;
+      margin: 15px 0;
+      padding: 10px;
+      background: #050508;
+      border: 1px solid #161b22;
+      border-radius: 4px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
-    .card h4 {
-      color: var(--accent);
-      font-size: 0.95rem;
-    }
+    .line { line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
+    .user { color: #58a6ff; }
+    .bot { color: #7ee787; }
+    .sys { color: #8b949e; font-style: italic; }
+    .error { color: #f85149; }
 
-    .card p {
-      color: var(--dim);
-      font-size: 0.8rem;
-    }
-
-    .card button, .card a {
-      margin-top: auto;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 6px;
-      text-align: center;
-      text-decoration: none;
-      font-size: 0.8rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .card button:hover, .card a:hover {
-      border-color: var(--accent);
-    }
-
-    /* Inline Player Container */
-    #emuWrapper {
-      margin-top: 16px;
-      display: none;
-      flex-direction: column;
-      flex: 1;
-      background: #000;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    .emu-controls {
-      background: var(--panel);
-      padding: 8px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .emu-title {
-      font-size: 0.85rem;
-      color: var(--accent);
-      font-weight: bold;
-    }
-
-    .emu-btn-group {
-      display: flex;
-      gap: 8px;
-    }
-
-    .emu-btn {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 4px 10px;
-      font-size: 0.75rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .emu-btn:hover {
-      border-color: var(--accent);
-    }
-
-    #emuFrame {
-      width: 100%;
-      height: 100%;
-      min-height: 480px;
-      border: none;
-      flex: 1;
-    }
+    .input-bar { display: flex; gap: 10px; }
+    .input-bar input { flex: 1; }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar -->
-  <div class="header-bar">
-    <div class="brand-title">NEROLINKXZ</div>
-    
-    <div class="nav-tabs">
-      <button class="nav-btn active" onclick="switchTab('terminalView', this)">AI Terminal</button>
-      <button class="nav-btn" onclick="switchTab('gamesView', this)">Emulators & Games</button>
-      <button class="nav-btn" onclick="switchTab('linksView', this)">Vault</button>
+  <header>
+    <h1>Nerolinkxz</h1>
+    <div class="key-bar">
+      <input type="password" id="apiKeyInput" placeholder="Enter Gemini API Key..." />
+      <button onclick="saveApiKey()">SAVE</button>
     </div>
+  </header>
 
-    <div class="config-group">
-      <input type="password" id="apiKeyInput" style="width: 150px;" placeholder="Gemini Key..." />
-      <button class="btn-save" id="saveBtn">SAVE</button>
-    </div>
-  </div>
+  <div id="terminal"></div>
 
-  <!-- Tab 1: AI Terminal -->
-  <div id="terminalView" class="view-content active">
-    <div id="terminal">
-      <div class="line sys">[NEROLINKXZ ENGINE ONLINE]</div>
-      <div class="line sys">Model Target: gemini-3.8-flash</div>
-      <div class="line sys">Type /clear to reset output screen.</div>
-    </div>
-    <div class="input-bar">
-      <span style="color: var(--accent);">$</span>
-      <input type="text" id="cmdInput" placeholder="Enter command or AI prompt..." autofocus />
-    </div>
-  </div>
-
-  <!-- Tab 2: Emulators & Games -->
-  <div id="gamesView" class="view-content">
-    <div class="grid-container">
-      <div class="card">
-        <h4>Doom 64 (N64 Core)</h4>
-        <p>Full N64 emulator core running Doom 64 embedded in browser.</p>
-        <button onclick="launchPlayer('Doom 64', 'https://v8.js-dos.com/')">Launch Doom 64</button>
-      </div>
-
-      <div class="card">
-        <h4>Classic Doom (1993)</h4>
-        <p>Original MS-DOS Doom WAD rendered via WebAssembly JS-DOS.</p>
-        <button onclick="launchPlayer('Doom 1993', 'https://v8.js-dos.com/')">Launch Doom 1</button>
-      </div>
-
-      <div class="card">
-        <h4>Super Mario 64</h4>
-        <p>Native WebGL decompilation port of Super Mario 64.</p>
-        <button onclick="launchPlayer('Super Mario 64', 'https://emupedia.net/beta/emuos/')">Launch SM64</button>
-      </div>
-
-      <div class="card">
-        <h4>GBA Emulator</h4>
-        <p>GameBoy Advance core supporting custom ROM uploads.</p>
-        <button onclick="launchPlayer('GBA Core', 'https://gameboy-online.github.io/')">Launch GBA</button>
-      </div>
-
-      <div class="card">
-        <h4>EmuOS Terminal</h4>
-        <p>Full Windows 95/98 desktop environment with retro arcade games.</p>
-        <button onclick="launchPlayer('EmuOS System', 'https://emupedia.net/beta/emuos/')">Launch EmuOS</button>
-      </div>
-    </div>
-
-    <!-- Embedded Player Window -->
-    <div id="emuWrapper">
-      <div class="emu-controls">
-        <span class="emu-title" id="emuActiveTitle">Player Active</span>
-        <div class="emu-btn-group">
-          <button class="emu-btn" onclick="toggleFullscreen()">Fullscreen</button>
-          <button class="emu-btn" onclick="closePlayer()">Close</button>
-        </div>
-      </div>
-      <iframe id="emuFrame" src="" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
-    </div>
-  </div>
-
-  <!-- Tab 3: Vault -->
-  <div id="linksView" class="view-content">
-    <div class="grid-container">
-      <div class="card">
-        <h4>GitHub Pages Arcade Index</h4>
-        <p>Direct list of statically hosted HTML5 repositories.</p>
-        <a href="https://github.com/topics/html5-game" target="_blank">Open Repository Index</a>
-      </div>
-      <div class="card">
-        <h4>Invidious / Iteroni</h4>
-        <p>Lightweight, proxy-filtered video engine.</p>
-        <a href="https://iteroni.com" target="_blank">Launch Iteroni</a>
-      </div>
-      <div class="card">
-        <h4>Scratch Engine Hubs</h4>
-        <p>Compiled JavaScript app executables.</p>
-        <a href="https://scratch.mit.edu" target="_blank">Open Scratch Hub</a>
-      </div>
-    </div>
+  <div class="input-bar">
+    <input type="text" id="userInput" placeholder="Type prompt here..." onkeydown="if(event.key==='Enter') handleSend()" />
+    <button onclick="handleSend()">SEND</button>
   </div>
 
   <script>
-    // Paste your fallback Gemini key here inside the quotes:
-    const HARDCODED_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
-
-    const apiKeyInput = document.getElementById('apiKeyInput');
-    const saveBtn = document.getElementById('saveBtn');
+    const HARDCODED_API_KEY = "AQ.Ab8RN6Lp6SrEq_evKhhTkeOeX2bJizc-750yPdKCuwtWIVFI6w";
     const terminal = document.getElementById('terminal');
-    const cmdInput = document.getElementById('cmdInput');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const userInput = document.getElementById('userInput');
 
-    // Auto-populate input with stored key or fallback
-    const savedKey = localStorage.getItem('nerolinkxz_key') || HARDCODED_API_KEY;
-    if (savedKey && savedKey !== "YOUR_GEMINI_API_KEY_HERE") {
-      apiKeyInput.value = savedKey;
-    }
-
-    saveBtn.addEventListener('click', () => {
-      localStorage.setItem('nerolinkxz_key', apiKeyInput.value.trim());
-      printLine('[SYS] Gemini key saved locally!', 'sys');
-    });
-
-    function switchTab(viewId, btn) {
-      document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(viewId).classList.add('active');
-      btn.classList.add('active');
-    }
-
-    function launchPlayer(title, url) {
-      const wrapper = document.getElementById('emuWrapper');
-      const frame = document.getElementById('emuFrame');
-      const titleLabel = document.getElementById('emuActiveTitle');
-
-      titleLabel.innerText = `[RUNNING] ${title}`;
-      frame.src = url;
-      wrapper.style.display = 'flex';
-      wrapper.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function closePlayer() {
-      const wrapper = document.getElementById('emuWrapper');
-      const frame = document.getElementById('emuFrame');
-      frame.src = '';
-      wrapper.style.display = 'none';
-    }
-
-    function toggleFullscreen() {
-      const frame = document.getElementById('emuFrame');
-      if (frame.requestFullscreen) {
-        frame.requestFullscreen();
-      } else if (frame.webkitRequestFullscreen) {
-        frame.webkitRequestFullscreen();
-      } else if (frame.msRequestFullscreen) {
-        frame.msRequestFullscreen();
-      }
-    }
-
-    cmdInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const val = cmdInput.value.trim();
-        if (!val) return;
-        cmdInput.value = '';
-
-        if (val === '/clear') {
-          terminal.innerHTML = '';
-          return;
-        }
-
-        printLine(`$ ${val}`, 'user');
-        sendGeminiPrompt(val);
+    // Auto-load API key on startup
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem('nerolinkxz_key');
+      if (savedKey) {
+        apiKeyInput.value = savedKey;
+        printLine('Loaded API Key from LocalStorage.', 'sys');
+      } else {
+        printLine('Welcome! Enter your API key above to start.', 'sys');
       }
     });
 
-    function printLine(text, type = 'bot') {
-      const div = document.createElement('div');
-      div.className = `line ${type}`;
-      div.innerText = text;
-      terminal.appendChild(div);
+    function saveApiKey() {
+      const key = apiKeyInput.value.trim();
+      if (key) {
+        localStorage.setItem('nerolinkxz_key', key);
+        printLine('API Key saved successfully!', 'sys');
+      } else {
+        localStorage.removeItem('nerolinkxz_key');
+        printLine('API Key cleared.', 'sys');
+      }
+    }
+
+    function printLine(text, type = 'sys') {
+      const el = document.createElement('div');
+      el.className = `line ${type}`;
+      el.innerText = text;
+      terminal.appendChild(el);
       terminal.scrollTop = terminal.scrollHeight;
-      return div;
+      return el;
+    }
+
+    async function handleSend() {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      printLine(`> ${text}`, 'user');
+      userInput.value = '';
+
+      await sendGeminiPrompt(text);
     }
 
     async function sendGeminiPrompt(promptText) {
-      // 1. Check localStorage -> 2. Check input field -> 3. Fallback to hardcoded key
       let apiKey = localStorage.getItem('nerolinkxz_key') || apiKeyInput.value.trim() || HARDCODED_API_KEY;
       
       if (!apiKey || apiKey === "YOUR_GEMINI_API_KEY_HERE") {
-        printLine('Error: Enter Gemini API key in top right & click SAVE.', 'error');
+        printLine('Error: Please enter a valid Gemini API key at the top & click SAVE.', 'error');
         return;
       }
 
       const loader = printLine('thinking...', 'sys');
       const cleanKey = apiKey.trim().replace(/^["']|["']$/g, '');
       
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${cleanKey}`;
+      // Target gemini-3.6-flash model
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${cleanKey}`;
 
-      try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-        });
+      const maxRetries = 3;
+      let attempt = 0;
 
-        loader.remove();
+      while (attempt < maxRetries) {
+        try {
+          attempt++;
+          if (attempt > 1) {
+            loader.innerText = `server busy, retrying (${attempt}/${maxRetries})...`;
+            await new Promise(r => setTimeout(r, 2000));
+          }
 
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          printLine(`API Error (${res.status}): ${errData.error?.message || 'Failed to connect'}`, 'error');
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: promptText }] }]
+            })
+          });
+
+          // Auto-retry on 503 high demand spikes
+          if (res.status === 503 && attempt < maxRetries) {
+            continue;
+          }
+
+          loader.remove();
+
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            const errMsg = errData.error?.message || `HTTP ${res.status}`;
+            printLine(`API Error (${res.status}): ${errMsg}`, 'error');
+            return;
+          }
+
+          const data = await res.json();
+          const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[No response]';
+          printLine(reply, 'bot');
           return;
+
+        } catch (err) {
+          if (attempt >= maxRetries) {
+            loader.remove();
+            printLine(`Connection Error: ${err.message}`, 'error');
+            return;
+          }
         }
-
-        const data = await res.json();
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[No response]';
-        printLine(reply, 'bot');
-
-      } catch (err) {
-        loader.remove();
-        printLine(`Connection Error: ${err.message}`, 'error');
       }
     }
   </script>
