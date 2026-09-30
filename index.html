@@ -20,7 +20,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 15px;
+      padding-bottom: 12px;
       border-bottom: 1px solid #1f2937;
     }
 
@@ -28,7 +28,7 @@
 
     .key-bar { display: flex; gap: 8px; }
 
-    input, button {
+    input, select, button {
       background: #161b22;
       border: 1px solid #30363d;
       color: #e6edf3;
@@ -37,7 +37,7 @@
       font-family: inherit;
     }
 
-    input:focus { outline: 1px solid #00ffcc; }
+    input:focus, select:focus { outline: 1px solid #00ffcc; }
 
     button {
       cursor: pointer;
@@ -49,14 +49,29 @@
 
     button:hover { background: #30363d; }
 
-    #terminal {
+    /* Main Grid Layout */
+    .main-container {
+      display: flex;
       flex: 1;
-      overflow-y: auto;
+      gap: 15px;
       margin: 15px 0;
-      padding: 10px;
+      overflow: hidden;
+    }
+
+    /* Terminal Section */
+    #terminal-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       background: #050508;
       border: 1px solid #161b22;
       border-radius: 4px;
+      padding: 10px;
+    }
+
+    #terminal {
+      flex: 1;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -68,8 +83,39 @@
     .sys { color: #8b949e; font-style: italic; }
     .error { color: #f85149; }
 
+    /* Game Hub Section */
+    #game-hub {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      background: #050508;
+      border: 1px solid #161b22;
+      border-radius: 4px;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .game-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .game-controls select { flex: 1; }
+
+    iframe {
+      width: 100%;
+      flex: 1;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      background: #000;
+    }
+
     .input-bar { display: flex; gap: 10px; }
     .input-bar input { flex: 1; }
+
+    @media (max-width: 900px) {
+      .main-container { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
@@ -82,10 +128,33 @@
     </div>
   </header>
 
-  <div id="terminal"></div>
+  <div class="main-container">
+    <!-- Terminal -->
+    <div id="terminal-container">
+      <div id="terminal"></div>
+    </div>
+
+    <!-- Embedded Game Hub -->
+    <div id="game-hub">
+      <div class="game-controls">
+        <select id="gameSelect" onchange="loadGame()">
+          <option value="">-- Select Game Site / Emulator --</option>
+          <option value="https://emulatoros.github.io/">EmulatorOS (Retro Games)</option>
+          <option value="https://eaglercraft.com/">Eaglercraft (Minecraft Web)</option>
+          <option value="https://slopegame.io/">Slope Game</option>
+
+          <option value="https://slowly.dev/apps/retro-games/">Retro Arcade Portal</option>
+          <option value="https://www.retrogames.cc/">RetroGames.cc</option>
+          <option value="https://dustinbrett.com/">daedalOS (Web OS & Games)</option>
+        </select>
+        <button onclick="toggleFullscreen()">FULLSCREEN</button>
+      </div>
+      <iframe id="gameFrame" src="about:blank" allowfullscreen></iframe>
+    </div>
+  </div>
 
   <div class="input-bar">
-    <input type="text" id="userInput" placeholder="Type prompt here..." onkeydown="if(event.key==='Enter') handleSend()" />
+    <input type="text" id="userInput" placeholder="Type prompt here... (or type /clear)" onkeydown="if(event.key==='Enter') handleSend()" />
     <button onclick="handleSend()">SEND</button>
   </div>
 
@@ -94,15 +163,19 @@
     const terminal = document.getElementById('terminal');
     const apiKeyInput = document.getElementById('apiKeyInput');
     const userInput = document.getElementById('userInput');
+    const gameFrame = document.getElementById('gameFrame');
 
     // Auto-load API key on startup
     window.addEventListener('DOMContentLoaded', () => {
       const savedKey = localStorage.getItem('nerolinkxz_key');
       if (savedKey) {
         apiKeyInput.value = savedKey;
-        printLine('Loaded API Key from LocalStorage.', 'sys');
+        printLine('[NEROLINKXZ CORE ENGINE ONLINE]', 'sys');
+        printLine('Loaded API key from storage.', 'sys');
       } else {
-        printLine('Welcome! Enter your API key above to start.', 'sys');
+        apiKeyInput.value = HARDCODED_API_KEY;
+        printLine('[NEROLINKXZ CORE ENGINE ONLINE]', 'sys');
+        printLine('Target Model: gemini-3.6-flash', 'sys');
       }
     });
 
@@ -110,10 +183,10 @@
       const key = apiKeyInput.value.trim();
       if (key) {
         localStorage.setItem('nerolinkxz_key', key);
-        printLine('API Key saved successfully!', 'sys');
+        printLine('API key saved successfully!', 'sys');
       } else {
         localStorage.removeItem('nerolinkxz_key');
-        printLine('API Key cleared.', 'sys');
+        printLine('API key cleared from storage.', 'sys');
       }
     }
 
@@ -126,11 +199,34 @@
       return el;
     }
 
+    function loadGame() {
+      const url = document.getElementById('gameSelect').value;
+      if (url) {
+        gameFrame.src = url;
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        gameFrame.requestFullscreen().catch(err => {
+          printLine(`Fullscreen error: ${err.message}`, 'error');
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
     async function handleSend() {
       const text = userInput.value.trim();
       if (!text) return;
 
-      printLine(`> ${text}`, 'user');
+      if (text === '/clear') {
+        terminal.innerHTML = '';
+        userInput.value = '';
+        return;
+      }
+
+      printLine(`$ ${text}`, 'user');
       userInput.value = '';
 
       await sendGeminiPrompt(text);
@@ -139,16 +235,27 @@
     async function sendGeminiPrompt(promptText) {
       let apiKey = localStorage.getItem('nerolinkxz_key') || apiKeyInput.value.trim() || HARDCODED_API_KEY;
       
-      if (!apiKey || apiKey === "YOUR_GEMINI_API_KEY_HERE") {
-        printLine('Error: Please enter a valid Gemini API key at the top & click SAVE.', 'error');
+      if (!apiKey) {
+        printLine('Error: No API key found. Enter key above and click SAVE.', 'error');
         return;
       }
 
       const loader = printLine('thinking...', 'sys');
       const cleanKey = apiKey.trim().replace(/^["']|["']$/g, '');
       
-      // Target gemini-3.6-flash model
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${cleanKey}`;
+      // Handle OAuth Bearer token format (AQ...) vs standard API key (AIza...)
+      const isOAuthToken = cleanKey.startsWith('AQ');
+      
+      // Target gemini-3.6-flash endpoint
+      const url = isOAuthToken 
+        ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent`
+        : `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${cleanKey}`;
+
+      const headers = { 'Content-Type': 'application/json' };
+      
+      if (isOAuthToken) {
+        headers['Authorization'] = `Bearer ${cleanKey}`;
+      }
 
       const maxRetries = 3;
       let attempt = 0;
@@ -163,13 +270,13 @@
 
           const res = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers,
             body: JSON.stringify({
               contents: [{ parts: [{ text: promptText }] }]
             })
           });
 
-          // Auto-retry on 503 high demand spikes
+          // Auto-retry on 503 high demand
           if (res.status === 503 && attempt < maxRetries) {
             continue;
           }
