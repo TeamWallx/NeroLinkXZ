@@ -348,12 +348,19 @@
   </div>
 
   <script>
+    // Paste your fallback Gemini key here inside the quotes:
+    const HARDCODED_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
+
     const apiKeyInput = document.getElementById('apiKeyInput');
     const saveBtn = document.getElementById('saveBtn');
     const terminal = document.getElementById('terminal');
     const cmdInput = document.getElementById('cmdInput');
 
-    apiKeyInput.value = localStorage.getItem('nerolinkxz_key') || '';
+    // Auto-populate input with stored key or fallback
+    const savedKey = localStorage.getItem('nerolinkxz_key') || HARDCODED_API_KEY;
+    if (savedKey && savedKey !== "YOUR_GEMINI_API_KEY_HERE") {
+      apiKeyInput.value = savedKey;
+    }
 
     saveBtn.addEventListener('click', () => {
       localStorage.setItem('nerolinkxz_key', apiKeyInput.value.trim());
@@ -422,8 +429,10 @@
     }
 
     async function sendGeminiPrompt(promptText) {
-      const apiKey = localStorage.getItem('nerolinkxz_key') || apiKeyInput.value.trim();
-      if (!apiKey) {
+      // 1. Check localStorage -> 2. Check input field -> 3. Fallback to hardcoded key
+      let apiKey = localStorage.getItem('nerolinkxz_key') || apiKeyInput.value.trim() || HARDCODED_API_KEY;
+      
+      if (!apiKey || apiKey === "YOUR_GEMINI_API_KEY_HERE") {
         printLine('Error: Enter Gemini API key in top right & click SAVE.', 'error');
         return;
       }
@@ -431,7 +440,6 @@
       const loader = printLine('thinking...', 'sys');
       const cleanKey = apiKey.trim().replace(/^["']|["']$/g, '');
       
-      // Fixed gemini-3.8-flash endpoint
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${cleanKey}`;
 
       try {
