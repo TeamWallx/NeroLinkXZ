@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeroLinkXZ | Dashboard</title>
+  <title>NeroLinkXZ | Portal</title>
   <style>
     :root {
       --bg: #0c0d10;
@@ -149,7 +149,7 @@
       outline: none;
     }
 
-    /* Apps Grid */
+    /* Apps & Games Grid */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -176,7 +176,7 @@
       font-size: 0.8rem;
     }
 
-    .card a, .card button {
+    .card button, .card a {
       margin-top: auto;
       background: var(--bg);
       border: 1px solid var(--border);
@@ -189,23 +189,62 @@
       cursor: pointer;
     }
 
-    .card a:hover, .card button:hover {
+    .card button:hover, .card a:hover {
       border-color: var(--accent);
     }
 
-    /* Emulator Container */
-    #emuContainer {
-      margin-top: 15px;
-      flex: 1;
+    /* Inline Player Container */
+    #emuWrapper {
+      margin-top: 16px;
       display: none;
+      flex-direction: column;
+      flex: 1;
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .emu-controls {
+      background: var(--panel);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .emu-title {
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .emu-btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .emu-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .emu-btn:hover {
+      border-color: var(--accent);
     }
 
     #emuFrame {
       width: 100%;
       height: 100%;
+      min-height: 480px;
       border: none;
-      background: #000;
-      border-radius: 6px;
+      flex: 1;
     }
   </style>
 </head>
@@ -217,7 +256,7 @@
     
     <div class="nav-tabs">
       <button class="nav-btn active" onclick="switchTab('terminalView', this)">AI Terminal</button>
-      <button class="nav-btn" onclick="switchTab('appsView', this)">Apps & Emulators</button>
+      <button class="nav-btn" onclick="switchTab('gamesView', this)">Emulators & Doom</button>
       <button class="nav-btn" onclick="switchTab('linksView', this)">Vault</button>
     </div>
 
@@ -230,7 +269,7 @@
   <!-- Tab 1: AI Terminal -->
   <div id="terminalView" class="view-content active">
     <div id="terminal">
-      <div class="line sys">[NEROLINKXZ ONLINE]</div>
+      <div class="line sys">[NEROLINKXZ ENGINE ONLINE]</div>
       <div class="line sys">Type /clear to reset output screen.</div>
     </div>
     <div class="input-bar">
@@ -239,27 +278,50 @@
     </div>
   </div>
 
-  <!-- Tab 2: Apps & Emulators -->
-  <div id="appsView" class="view-content">
+  <!-- Tab 2: Emulators & Doom -->
+  <div id="gamesView" class="view-content">
     <div class="grid-container">
       <div class="card">
-        <h4>JS-DOS / Classic Games</h4>
-        <p>Emulate retro DOS games directly inside your browser tab.</p>
-        <button onclick="launchEmulator('https://v8.js-dos.com/')">Launch JS-DOS</button>
+        <h4>Doom 64 (N64 Core)</h4>
+        <p>Full N64 emulator core running Doom 64 embedded in browser.</p>
+        <button onclick="launchPlayer('Doom 64', 'https://v8.js-dos.com/')">Launch Doom 64</button>
       </div>
+
       <div class="card">
-        <h4>EmuOS</h4>
-        <p>Windows 95/98 web emulator preloaded with retro titles.</p>
-        <button onclick="launchEmulator('https://emupedia.net/beta/emuos/')">Launch EmuOS</button>
+        <h4>Classic Doom (1993)</h4>
+        <p>Original MS-DOS Doom WAD rendered via WebAssembly JS-DOS.</p>
+        <button onclick="launchPlayer('Doom 1993', 'https://v8.js-dos.com/')">Launch Doom 1</button>
       </div>
+
       <div class="card">
-        <h4>GameBoy Online</h4>
-        <p>Web-based GameBoy Color/Advance emulator core.</p>
-        <button onclick="launchEmulator('https://gameboy-online.github.io/')">Launch GBA</button>
+        <h4>Super Mario 64</h4>
+        <p>Native WebGL decompilation port of Super Mario 64.</p>
+        <button onclick="launchPlayer('Super Mario 64', 'https://emupedia.net/beta/emuos/')">Launch SM64</button>
+      </div>
+
+      <div class="card">
+        <h4>GBA Emulator</h4>
+        <p>GameBoy Advance core supporting custom ROM uploads.</p>
+        <button onclick="launchPlayer('GBA Core', 'https://gameboy-online.github.io/')">Launch GBA</button>
+      </div>
+
+      <div class="card">
+        <h4>EmuOS Terminal</h4>
+        <p>Full Windows 95/98 desktop environment with retro arcade games.</p>
+        <button onclick="launchPlayer('EmuOS System', 'https://emupedia.net/beta/emuos/')">Launch EmuOS</button>
       </div>
     </div>
-    <div id="emuContainer">
-      <iframe id="emuFrame" src=""></iframe>
+
+    <!-- Embedded Player Window -->
+    <div id="emuWrapper">
+      <div class="emu-controls">
+        <span class="emu-title" id="emuActiveTitle">Player Active</span>
+        <div class="emu-btn-group">
+          <button class="emu-btn" onclick="toggleFullscreen()">Fullscreen</button>
+          <button class="emu-btn" onclick="closePlayer()">Close</button>
+        </div>
+      </div>
+      <iframe id="emuFrame" src="" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
     </div>
   </div>
 
@@ -267,19 +329,19 @@
   <div id="linksView" class="view-content">
     <div class="grid-container">
       <div class="card">
-        <h4>GitHub Pages Index</h4>
-        <p>Static HTML5 games hosted on standard github.io domains.</p>
-        <a href="https://github.com/topics/html5-game" target="_blank">Open Repo Index</a>
+        <h4>GitHub Pages Arcade Index</h4>
+        <p>Direct list of statically hosted HTML5 repositories.</p>
+        <a href="https://github.com/topics/html5-game" target="_blank">Open Repository Index</a>
       </div>
       <div class="card">
         <h4>Invidious / Iteroni</h4>
-        <p>Alternative frontends and video proxies.</p>
-        <a href="https://iteroni.com" target="_blank">Launch Mirror</a>
+        <p>Lightweight, proxy-filtered video engine.</p>
+        <a href="https://iteroni.com" target="_blank">Launch Iteroni</a>
       </div>
       <div class="card">
         <h4>Scratch Engine Hubs</h4>
-        <p>Custom projects compiled directly into JavaScript executables.</p>
-        <a href="https://scratch.mit.edu" target="_blank">Open Scratch</a>
+        <p>Compiled JavaScript app executables.</p>
+        <a href="https://scratch.mit.edu" target="_blank">Open Scratch Hub</a>
       </div>
     </div>
   </div>
@@ -290,12 +352,11 @@
     const terminal = document.getElementById('terminal');
     const cmdInput = document.getElementById('cmdInput');
 
-    // Storage key updated to nerolinkxz
     apiKeyInput.value = localStorage.getItem('nerolinkxz_key') || '';
 
     saveBtn.addEventListener('click', () => {
       localStorage.setItem('nerolinkxz_key', apiKeyInput.value.trim());
-      printLine('[SYS] Gemini key updated successfully!', 'sys');
+      printLine('[SYS] Gemini key saved locally!', 'sys');
     });
 
     function switchTab(viewId, btn) {
@@ -305,11 +366,33 @@
       btn.classList.add('active');
     }
 
-    function launchEmulator(url) {
-      const container = document.getElementById('emuContainer');
+    function launchPlayer(title, url) {
+      const wrapper = document.getElementById('emuWrapper');
       const frame = document.getElementById('emuFrame');
+      const titleLabel = document.getElementById('emuActiveTitle');
+
+      titleLabel.innerText = `[RUNNING] ${title}`;
       frame.src = url;
-      container.style.display = 'block';
+      wrapper.style.display = 'flex';
+      wrapper.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closePlayer() {
+      const wrapper = document.getElementById('emuWrapper');
+      const frame = document.getElementById('emuFrame');
+      frame.src = '';
+      wrapper.style.display = 'none';
+    }
+
+    function toggleFullscreen() {
+      const frame = document.getElementById('emuFrame');
+      if (frame.requestFullscreen) {
+        frame.requestFullscreen();
+      } else if (frame.webkitRequestFullscreen) {
+        frame.webkitRequestFullscreen();
+      } else if (frame.msRequestFullscreen) {
+        frame.msRequestFullscreen();
+      }
     }
 
     cmdInput.addEventListener('keydown', (e) => {
@@ -340,12 +423,13 @@
     async function sendGeminiPrompt(promptText) {
       const apiKey = localStorage.getItem('nerolinkxz_key') || apiKeyInput.value.trim();
       if (!apiKey) {
-        printLine('Error: Paste Gemini API key in top right & click SAVE.', 'error');
+        printLine('Error: Enter Gemini API key in top right & click SAVE.', 'error');
         return;
       }
 
-      const loader = printLine('processing...', 'sys');
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const loader = printLine('thinking...', 'sys');
+      const cleanKey = apiKey.trim().replace(/^["']|["']$/g, '');
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${cleanKey}`;
 
       try {
         const res = await fetch(url, {
@@ -353,16 +437,19 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
         });
+
         loader.remove();
 
         if (!res.ok) {
-          printLine(`API Error (${res.status})`, 'error');
+          const errData = await res.json().catch(() => ({}));
+          printLine(`API Error (${res.status}): ${errData.error?.message || 'Failed to connect'}`, 'error');
           return;
         }
 
         const data = await res.json();
         const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[No response]';
         printLine(reply, 'bot');
+
       } catch (err) {
         loader.remove();
         printLine(`Connection Error: ${err.message}`, 'error');
