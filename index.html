@@ -256,7 +256,7 @@
     
     <div class="nav-tabs">
       <button class="nav-btn active" onclick="switchTab('terminalView', this)">AI Terminal</button>
-      <button class="nav-btn" onclick="switchTab('gamesView', this)">Emulators & Doom</button>
+      <button class="nav-btn" onclick="switchTab('gamesView', this)">Emulators & Games</button>
       <button class="nav-btn" onclick="switchTab('linksView', this)">Vault</button>
     </div>
 
@@ -270,6 +270,7 @@
   <div id="terminalView" class="view-content active">
     <div id="terminal">
       <div class="line sys">[NEROLINKXZ ENGINE ONLINE]</div>
+      <div class="line sys">Model Target: gemini-3.8-flash</div>
       <div class="line sys">Type /clear to reset output screen.</div>
     </div>
     <div class="input-bar">
@@ -278,7 +279,7 @@
     </div>
   </div>
 
-  <!-- Tab 2: Emulators & Doom -->
+  <!-- Tab 2: Emulators & Games -->
   <div id="gamesView" class="view-content">
     <div class="grid-container">
       <div class="card">
@@ -429,7 +430,9 @@
 
       const loader = printLine('thinking...', 'sys');
       const cleanKey = apiKey.trim().replace(/^["']|["']$/g, '');
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${cleanKey}`;
+      
+      // Fixed gemini-3.8-flash endpoint
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${cleanKey}`;
 
       try {
         const res = await fetch(url, {
